@@ -42,3 +42,4 @@ error_log("RabbitMQ response: " . json_encode($response));
 echo json_encode($response);
 exit;
 ?>
+
