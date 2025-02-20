@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-$mydb = new mysqli('127.0.0.1','mjn92','Blueblu2@','movDB');
+$mydb = new mysqli('127.0.0.1','TeamDog123','TeamDog123','movDB');
 
 if ($mydb->errno != 0)
 {
