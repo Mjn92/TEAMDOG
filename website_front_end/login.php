@@ -8,8 +8,8 @@ function doLogin($username, $password)
     // Database connection details
     $host = "100.93.130.48"; // Database server IP
     $dbuser = "mjn92";       // Database username
-    $dbpass = "";            // Database password (update this)
-    $dbname = "your_database_name"; // Set the actual database name
+    $dbpass = "TeamDog123";  //Our DB password
+    $dbname = "TeamDog123"; // Our DB name 
 
     // Connect to the database
     $conn = new mysqli($host, $dbuser, $dbpass, $dbname);
