@@ -19,7 +19,15 @@ function doLogin($username,$password){
 	if($output === "accept"){
 		$sessionKey = generateSessionKey();
 
-		file_put_contents('/tmp/session_keys.log', "$username:$sessionKey\n", FILE_APPEND);
+		$db = new mysqli('127.0.0.1', 'TeamDog123', 'TeamDog123', 'movDB');
+		if($db->connect_errno){
+			return array("returnCode" => '1', "message" => "Database connection error");
+		}
+
+		$stmt = $db->perpare("insert into sessions (username, session_key) values (?, ?)");
+		$stmt->bind_peram("ss", $username, $sessionKey);
+		$stmt->execute();
+
 		return array("returnCode" => '0', "message" => "Login successful", "sessionKey" => $sessionKey);
 	}
 	return array("returnCode" => '1', "message" => "Invalid credentials");
