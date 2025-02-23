@@ -19,25 +19,25 @@ if ($mydb->errno != 0){
 
 echo "successfully connected to database".PHP_EOL;
 
-$query = "insert into users (username, email, password) values ($username, $email, $password);"
+$query = "insert into users (username, email, password) values (?, ?, ?)";
+$stmt = $mydb->prepare($query);
 
-$response = $mydb->query($query);
-if ($mydb->errno != 0)
-{
-        echo "failed to execute query:".PHP_EOL;
-        echo __FILE__.':'.__LINE__.":error: ".$mydb->error.PHP_EOL;
-        exit(0);
+if (!$stmt){
+	echo "failed to prepare query: " . $mydb-error . PHP_EOL;
+	exit(1);
 }
 
-if ($response->num_rows > 0){
-        while ($row = $response->fetch_assoc()){
-                print_r($row);
-                echo PHP_EOL;
-        }
-} else {
-        echo "No records found." . PHP_EOL;
+$stmt->bind_param("sss", $username, $email, $password);
+$success = $stmt->execute();
+
+if(!$success){
+	echo "failed to execute query: " . $stmt->error . PHP_EOL;
+	exit(1);
 }
 
+echo "user successfully created!" . PHP_EOL;
+
+$stmt->close();
 $mydb->close();
 ?>
 
