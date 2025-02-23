@@ -26,6 +26,24 @@ function doLogin($username,$password){
 //    return true;
     //return false if not valid
 }
+function makeUser($username,$email,$password){
+    // lookup username in databas
+        // check password
+        $command = escapeshellcmd("./makeUser.php '$username' '$email' '$password'");
+        $output = shell_exec($command);
+
+        $output = trim($output);
+
+        if($output === "user successfully created!"){
+                $sessionKey = generateSessionKey();
+
+                file_put_contents('/tmp/session_keys.log', "$username:$sessionKey\n", FILE_APPEND);
+                return array("returnCode" => '0', "message" => "user made successful", "sessionKey" => $sessionKey);
+        }
+        return array("returnCode" => '1', "message" => "Invalid credentials");
+//    return true;
+    //return false if not valid
+}
 
 function requestProcessor($request)
 {
