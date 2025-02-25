@@ -9,50 +9,27 @@ function generateSessionKey(){
 }
 
 function doLogin($username,$password){
-    // lookup username in databas
-	// check password
+    // lookup username in databae and  check password
 	$command = escapeshellcmd("./checkUser.php '$username' '$password'");
 	$output = shell_exec($command);
 
-	$output = trim($output);
-
-	if($output === "accept"){
-		$sessionKey = generateSessionKey();
-
-		$db = new mysqli('127.0.0.1', 'TeamDog123', 'TeamDog123', 'movDB');
-		if($db->connect_errno){
-			return array("returnCode" => '1', "message" => "Database connection error");
-		}
-
-		$stmt = $db->perpare("insert into sessions (username, session_key) values (?, ?)");
-		$stmt->bind_peram("ss", $username, $sessionKey);
-		$stmt->execute();
+	if(preg_match('/\baccept\b', $output)){
+		$command = escapeshellcmd("./sessionKey.php '$username'");
 
 		return array("returnCode" => '0', "message" => "Login successful", "sessionKey" => $sessionKey);
 	}
 	return array("returnCode" => '1', "message" => "Invalid credentials");
-//    return true;
-    //return false if not valid
 }
 function makeUser($username,$email,$password){
-    // lookup username in databas
-        // check password
+    // make a  user in database
         $command = escapeshellcmd("./makeUser.php '$username' '$email' '$password'");
         $output = shell_exec($command);
 
-        $output = trim($output);
+	if(preg_match('/\bcreated\b', $output)){
+		return array("returnCode" => '0', "message"  => "User Created");
 
-        if($output === "user successfully created!"){
-                $sessionKey = generateSessionKey();
-
-		$stmt = $db->perpare("insert into sessions (username, session_key) values (?, ?)");
-		$stmt->bind_peram("ss", $username, $sessionKey);
-		$stmt->execute();
-                return array("returnCode" => '0', "message" => "user made successful", "sessionKey" => $sessionKey);
-        }
-        return array("returnCode" => '1', "message" => "Invalid credentials");
-//    return true;
-    //return false if not valid
+	}
+	return array("returnCode" => '1', "message" => "Invaild Input");
 }
 
 function requestProcessor($request)
@@ -67,6 +44,8 @@ function requestProcessor($request)
   {
     case "login":
       return doLogin($request['username'],$request['password']);
+    case: "makeUser":
+	    return makeUser($request['username',$request['email'],$request['password']);
     case "validate_session":
       return doValidate($request['sessionId']);
   }
