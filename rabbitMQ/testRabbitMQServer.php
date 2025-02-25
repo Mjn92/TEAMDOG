@@ -7,11 +7,11 @@ require_once('rabbitMQLib.inc');
 function doLogin($username,$password)
 {
 	$host="100.93.130.48";
-	$dbuser="mjn92";
-	$dbpass="";
-	$dbname="";
+	$dbuser="TeamDog123";
+	$dbpass="TeamDog123";
+	$dbname="users";// name of the table
 	$conn = new mysqli($host,$dbuser,$dbpass,$dbname);
-	$stmt=$conn->prepare("SELECT * FROM users WHERE username = ? AND password = ?");
+	$stmt=$conn->prepare("SELECT * FROM users WHERE username = ? AND password = ?");//could be implemented here too
 	$stmt->bind_param("ss",$username,$password);
 	$stmt->execute();
 	$result = $stmt->get_result();
