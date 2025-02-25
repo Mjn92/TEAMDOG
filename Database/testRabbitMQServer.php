@@ -45,7 +45,9 @@ function makeUser($username,$email,$password){
         if($output === "user successfully created!"){
                 $sessionKey = generateSessionKey();
 
-                file_put_contents('/tmp/session_keys.log', "$username:$sessionKey\n", FILE_APPEND);
+		$stmt = $db->perpare("insert into sessions (username, session_key) values (?, ?)");
+		$stmt->bind_peram("ss", $username, $sessionKey);
+		$stmt->execute();
                 return array("returnCode" => '0', "message" => "user made successful", "sessionKey" => $sessionKey);
         }
         return array("returnCode" => '1', "message" => "Invalid credentials");
