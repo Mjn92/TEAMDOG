@@ -13,10 +13,10 @@ function doLogin($username,$password){
 	$command = escapeshellcmd("./checkUser.php '$username' '$password'");
 	$output = shell_exec($command);
 
-	if(preg_match('/\baccept\b', $output)){
+	if(preg_match('/\baccept\b/', $output)){
 		$command = escapeshellcmd("./sessionKey.php '$username'");
 
-		return array("returnCode" => '0', "message" => "Login successful", "sessionKey" => $sessionKey);
+		return array("returnCode" => '0', "message" => "Login successful");
 	}
 	return array("returnCode" => '1', "message" => "Invalid credentials");
 }
@@ -31,6 +31,16 @@ function makeUser($username,$email,$password){
 	}
 	return array("returnCode" => '1', "message" => "Invaild Input");
 }
+function doValidate($username){
+    	// lookup username in databae and  check password
+        $command = escapeshellcmd("./valSession.php '$username'");
+        $output = shell_exec($command);
+
+        if(preg_match('/\baccept\b/', $output)){
+                return array("returnCode" => '0', "message" => "Login successful");
+        }
+        return array("returnCode" => '1', "message" => "Invalid credentials");
+}
 
 function requestProcessor($request)
 {
@@ -44,8 +54,8 @@ function requestProcessor($request)
   {
     case "login":
       return doLogin($request['username'],$request['password']);
-    case: "makeUser":
-	    return makeUser($request['username',$request['email'],$request['password']);
+    case "makeUser":
+	    return makeUser($request['username'],$request['email'],$request['password']);
     case "validate_session":
       return doValidate($request['sessionId']);
   }
