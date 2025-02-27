@@ -16,7 +16,7 @@ function doLogin($username,$password){
 	if(preg_match('/\baccept\b/', $output)){
 		$command = escapeshellcmd("./sessionKey.php '$username'");
 
-		return array("returnCode" => '0', "message" => "Login successful");
+		return array("returnCode" => 0, "message" => "Login successful");
 	}
 	return array("returnCode" => '1', "message" => "Invalid credentials");
 }
