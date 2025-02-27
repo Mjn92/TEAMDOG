@@ -7,8 +7,7 @@
 
 <h1>Login Page</h1>
 
-<!-- Simple login form -->
-<form onsubmit="event.preventDefault(); SendLoginRequest();">
+<form onsubmit="event.preventDefault(); sendLoginRequest();">
     <label for="username">Username:</label>
     <input type="text" id="username" required><br>
 
@@ -18,47 +17,31 @@
     <button type="submit">Login</button>
 </form>
 
-<!-- This area will display the server response -->
 <div id="textResponse">Please enter your information</div>
 
 <script>
-/**
- * Handles the server response and updates the page with the message.
- */
-function HandleLoginResponse(response) {
-    try {
-        var jsonResponse = JSON.parse(response); // Convert response to JSON
-        document.getElementById("textResponse").innerHTML = "Response: " + jsonResponse.message;
-        
-        // Redirect if login is successful
-        if (jsonResponse.returnCode === "success") {
-            window.location.href = "dashboard.html"; // Redirect to a dashboard page
-        }
-    } catch (error) {
-        console.error("Error parsing response:", error);
-        document.getElementById("textResponse").innerHTML = "Error processing response.";
-    }
-}
+function sendLoginRequest() {
+    var username = document.getElementById("username").value;
+    var password = document.getElementById("password").value;
 
-/**
- * Sends a login request to the server.
- */
-function SendLoginRequest() {
-    var username = document.getElementById("username").value; // Get username from input
-    var password = document.getElementById("password").value; // Get password from input
-
-    var request = new XMLHttpRequest(); // Create AJAX request
-    request.open("POST", "login.php", true); // Send data to login.php
+    var request = new XMLHttpRequest();
+    request.open("POST", "login.php", true);
     request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
     request.onreadystatechange = function () {
-        if (this.readyState === 4 && this.status === 200) { //4 request has finished processing 200 request was successful
-            HandleLoginResponse(this.responseText); // Handle server response
+        if (this.readyState === 4 && this.status === 200) {
+            var jsonResponse = JSON.parse(this.responseText);
+            document.getElementById("textResponse").innerHTML = jsonResponse.message;
+
+            if (jsonResponse.returnCode === "success") {
+                window.location.href = "home.html"; // Redirect on success
+            } else {
+                window.location.href = "register.html"; // Redirect if user not found
+            }
         }
     };
 
-    // Send username and password to the backend
-    request.send("type=login&username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password));
+    request.send("username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password));
 }
 </script>
 
