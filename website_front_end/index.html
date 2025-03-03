@@ -31,9 +31,11 @@ function sendLoginRequest() {
     request.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
             var jsonResponse = JSON.parse(this.responseText);
+            var returncode = jsonResponse.returnCode;
+            var message = jsonResponse.message;
             document.getElementById("textResponse").innerHTML = jsonResponse.message;
 
-            if (jsonResponse.returnCode === "success") {
+            if (returncode === 0) {
                 window.location.href = "home.html"; // Redirect on success
             } else {
                 window.location.href = "register.html"; // Redirect if user not found
