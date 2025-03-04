@@ -5,11 +5,13 @@ require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
 $client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
-
+$type=$argv[1];
+$username=$argv[2];
+$password=$argv[3];
 $request = array();
-$request['type'] = "login";  // Simulates a request from VM1
-$request['username'] = "test";
-$request['password'] = "pass1234";
+$request['type'] = $type;  // Simulates a request from VM1
+$request['username'] = $username;
+$request['password'] = $password;
 
 $response = $client->send_request($request);
 
