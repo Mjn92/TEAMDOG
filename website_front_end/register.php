@@ -12,6 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // Retrieve username and password from the POST request
 $username = $_POST['username'];
+$email = $_POST['email'];
 $password = $_POST['password'];
 //Hashes the password before sending it
 // will do this at a later time 
@@ -22,8 +23,9 @@ $client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
 
 // Prepare request data to send to the server
 $request = array();
-$request['type'] = "register";  // Tell the server that this is a registration request
+$request['type'] = "makeUser";  // Tell the server that this is a registration request
 $request['username'] = $username;
+$request['email'] = $email;
 $request['password'] = $password;  
 
 // Send request to the RabbitMQ server and get the response
