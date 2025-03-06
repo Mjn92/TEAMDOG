@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+</head>
+<body>
+
+<h1>Login Page</h1>
+
+<form onsubmit="event.preventDefault(); sendLoginRequest();">
+    <label for="username">Username:</label>
+    <input type="text" id="username" required><br>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" required><br>
+
+    <button type="submit">Login</button>
+    <button onclick="window.location.href='register.html'">Register</button>
+</form>
+
+<div id="textResponse">Please enter your information</div>
+
+<script>
+function sendLoginRequest() {
+    var username = document.getElementById("username").value;
+    var password = document.getElementById("password").value;
+
+    var request = new XMLHttpRequest();
+    request.open("POST", "login.php", true);
+    request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    request.onreadystatechange = function () {
+        if (this.readyState === 4 && this.status === 200) {
+            var jsonResponse = JSON.parse(this.responseText);
+            var returncode = jsonResponse.returnCode;
+            var message = jsonResponse.message;
+            document.getElementById("textResponse").innerHTML = jsonResponse.message;
+
+            if (returncode === 0) {
+                window.location.href = "home.html"; // Redirect on success
+            } else {
+                window.location.href = "register.html"; // Redirect if user not found
+            }
+        }
+    };
+
+    request.send("username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password));
+}
+</script>
+
+</body>
+</html>
+

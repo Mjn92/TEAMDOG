@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register Page</title>
+</head>
+<body>
+
+<h1>Register</h1>
+
+<!-- Registration form -->
+<form onsubmit="event.preventDefault(); sendRegisterRequest();">
+    <label for="username">Username:</label>
+    <input type="text" id="username" required><br>
+
+    <label for="email">Email:</label>
+    <input type="text" id="email" required><br>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" required><br>
+
+    <button type="submit">Register</button>
+</form>
+
+<!-- Area to display response messages -->
+<div id="textResponse">Please enter your details</div>
+
+<script>
+function sendRegisterRequest() {
+    // Get username and password from input fields
+    var username = document.getElementById("username").value;
+    var email = document.getElementById("email").value;
+    var password = document.getElementById("password").value;
+
+    // Create an AJAX request to send the registration data to register.php
+    var request = new XMLHttpRequest();
+    request.open("POST", "register.php", true);
+    request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    // Handle the server response
+    request.onreadystatechange = function () {
+        if (this.readyState === 4 && this.status === 200) {
+            // Convert the JSON response into a JavaScript object
+            var jsonResponse = JSON.parse(this.responseText);
+            var returncode = jsonResponse.returnCode;
+            var message = jsonResponse.message;
+
+            // Display response message
+            document.getElementById("textResponse").innerHTML = message;
+
+            // If registration is successful, redirect to home.html
+            if (returncode === 0) {
+                window.location.href = "index.html";
+            }
+        }
+    };
+
+    // Send the username and password to the PHP script
+    request.send("username=" + encodeURIComponent(username) + "email=" + encodeURIComponent(email) + "&password=" + encodeURIComponent(password));
+}
+</script>
+
+</body>
+</html>
