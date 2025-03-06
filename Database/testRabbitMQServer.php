@@ -18,18 +18,21 @@ function doLogin($username,$password){
 
 		return array("returnCode" => 0, "message" => "Login successful");
 	}
-	return array("returnCode" => '1', "message" => "Invalid credentials");
+	return array("returnCode" =>1, "message" => "Invalid credentials");
 }
 function makeUser($username,$email,$password){
     // make a  user in database
         $command = escapeshellcmd("./makeUser.php '$username' '$email' '$password'");
         $output = shell_exec($command);
 
-	if(preg_match('/\bcreated\b', $output)){
-		return array("returnCode" => '0', "message"  => "User Created");
+	if(preg_match('/\bcreated\b/', $output)){
+		return array("returnCode" => 0, "message"  => "User Created");
 
-	}
-	return array("returnCode" => '1', "message" => "Invaild Input");
+	}else{
+		return array("returnCode" => 1, "message" => "failed to create user");
+	 }
+
+	return array("returnCode" => 1, "message" => "Invaild Input");
 }
 function doValidate($username){
     	// lookup username in databae and  check password
@@ -39,7 +42,7 @@ function doValidate($username){
         if(preg_match('/\baccept\b/', $output)){
                 return array("returnCode" => '0', "message" => "Login successful");
         }
-        return array("returnCode" => '1', "message" => "Invalid credentials");
+        return array("returnCode" => 1, "message" => "Invalid credentials");
 }
 
 function requestProcessor($request)
@@ -59,7 +62,7 @@ function requestProcessor($request)
     case "validate_session":
       return doValidate($request['sessionId']);
   }
-  return array("returnCode" => '0', 'message'=>"Server received request and processed");
+  return array("returnCode" => 1, 'message'=>"Server received request but not found");
 }
 
 $server = new rabbitMQServer("testRabbitMQ.ini","testServer");
