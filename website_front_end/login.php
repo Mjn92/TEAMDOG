@@ -12,9 +12,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $username = $_POST['username'];
 $password = $_POST['password'];
 
-// Hash the password before sending
-$hashed_password = password_hash($password, PASSWORD_BCRYPT);
-
 // Create RabbitMQ client instance
 $client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
 
@@ -22,7 +19,7 @@ $client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
 $request=array();
 $request['type']="login";
 $request['username']=$username;
-$request['password'] = $hashed_password; // Send hashed password
+$request['password'] = $password; // Send hashed password
 
 // Send request and get response
 $response = $client->send_request($request);
