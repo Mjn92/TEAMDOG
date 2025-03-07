@@ -55,7 +55,7 @@ function sendRegisterRequest() {
     };
 
     // Send the username and password to the PHP script
-    request.send("username=" + encodeURIComponent(username) + "email=" + encodeURIComponent(email) + "&password=" + encodeURIComponent(password));
+    request.send("username=" + encodeURIComponent(username) + "&email=" + encodeURIComponent(email) + "&password=" + encodeURIComponent(password));
 }
 </script>
 
