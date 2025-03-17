@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Friends Page</title>
+</head>
+<body>
+
+ 
+    <!-- Navigation Bar -->
+<div class="navbar">
+    <a href="home.html">Home</a>
+    <a href="browse.html">Browse</a>
+    <a href="friends.html">Friends</a>
+    
+</div>
+
+    <h1>Your Friends</h1>
+    <!-- friends list will be shown -->
+    <div id="friendsList"></div>
+
+    <script>
+        //fetch friends list based on the logged-in user
+        function getFriendsList() {
+            // Assuming the username is stored in localStorage after login
+            var username = localStorage.getItem("username");
+
+            // If username is not found, prompt user to log in
+            if (!username) {
+                document.getElementById("friendsList").innerHTML = "Please log in to view your friends.";
+                return;
+            }
+
+            // Create the request to send to RabbitMQ
+            var request = new XMLHttpRequest();
+            request.open("POST", "friends.php", true);
+            request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            // Handle the response from the server
+            request.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) {
+                    var jsonResponse = JSON.parse(this.responseText);
+                    if (jsonResponse.returnCode === 0) {
+                        // If the response is successful, display the friends list
+                        displayFriends(jsonResponse.friends);
+                    } else {
+                        document.getElementById("friendsList").innerHTML = jsonResponse.message;
+                    }
+                }
+            };
+
+            // Sending the request with the username to get the friend's list
+            request.send("username=" + encodeURIComponent(username));
+        }
+
+        // Function to display friends in the list
+        function displayFriends(friends) {
+            var friendsDiv = document.getElementById("friendsList");
+            if (friends.length === 0) {
+                friendsDiv.innerHTML = "You don't have any friends yet.";
+            } else {
+                var friendsHtml = "<ul>";
+                for (var i = 0; i < friends.length; i++) {
+                    friendsHtml += "<li>" + friends[i].name + "</li>";
+                }
+                friendsHtml += "</ul>";
+                friendsDiv.innerHTML = friendsHtml;
+            }
+        }
+
+        // Call the function when the page loads
+        window.onload = getFriendsList;
+    </script>
+
+</body>
+</html>

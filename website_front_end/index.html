@@ -39,7 +39,7 @@ function sendLoginRequest() {
             if (returncode === 0) {
                 window.location.href = "home.html"; // Redirect on success
             } else {
-                window.location.href = "register.html"; // Redirect if user not found
+                alert("Wrong login. Please check your username and password.");
             }
         }
     };
