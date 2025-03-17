@@ -72,6 +72,23 @@ function checkMovie($movieName){
     return array("returnCode" => 0, "message" => "Movie data", "data" => $output);
 }
 
+function add_Friend($username, $friendName){
+    $command = escapeshellcmd("./makeFriends.php '$username' '$friendName'");
+    $output = shell_exec($command);
+    
+    if(preg_match('/\bsuccessfully\b/', $output)){
+        return array("returnCode" => 0, "message" => "Friend added successfully");
+    }
+    return array("returnCode" => 1, "message" => "Failed to add friend");
+}
+
+function get_Friends($username){
+    $command = escapeshellcmd("./checkFriends.php '$username'");
+    $output = shell_exec($command);
+    
+    return array("returnCode" => 0, "message" => "User's friends list", "data" => $output);
+}
+
 function requestProcessor($request)
 {
   echo "received request".PHP_EOL;
@@ -94,6 +111,10 @@ function requestProcessor($request)
 	    return checkUserPref($request['username']);
     case "checkMovie":
             return checkMovie($request['movieName']);
+    case "add_Friends":
+      return addFriend($request['username'], $request['friendName']);
+    case "get_Friends":
+      return getFriends($request['username']); 
   }	
   return array("returnCode" => 1, 'message'=>"Server received request but not found");
 }
