@@ -14,6 +14,7 @@ if (!isset($_SESSION['username'])) {
 }
 
 // Get the user’s movie preferences from the form submission
+$username = $_SESSION['username']; //defines username
 $genre = $_POST['genre'];
 $year = $_POST['year'];
 $rating = $_POST['rating'];
@@ -26,6 +27,16 @@ $request = array();
 $request['type'] = "get_recommendations"; // Request type: fetch recommendations
 $request['username'] = $username; // Send the username to get personalized suggestions
 
+//includes the movie preferences that are provided in the request 
+if ($genre) {
+    $request['genre'] = $genre;
+}
+if ($year) {
+    $request['year'] = $year;
+}
+if ($rating) {
+    $request['rating'] = $rating;
+}
 // Send the request and get the response from RabbitMQ
 $response = $client->send_request($request);
 
