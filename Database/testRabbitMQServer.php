@@ -9,7 +9,6 @@ function generateSessionKey(){
 }
 
 function doLogin($username,$password){
-    // lookup username in databae and  check password
 	$command = escapeshellcmd("./checkUser.php '$username' '$password'");
 	$output = shell_exec($command);
 
@@ -22,7 +21,6 @@ function doLogin($username,$password){
 	return array("returnCode" =>1, "message" => "Invalid credentials");
 }
 function makeUser($username,$email,$password){
-    // make a  user in database
         $command = escapeshellcmd("./makeUser.php '$username' '$email' '$password'");
         $output = shell_exec($command);
 
@@ -36,18 +34,16 @@ function makeUser($username,$email,$password){
 	return array("returnCode" => 1, "message" => "Invaild Input");
 }
 function doValidate($username){
-    	// lookup username in databae and  check password
         $command = escapeshellcmd("./valSession.php '$username'");
         $output = shell_exec($command);
 
         if(preg_match('/\baccept\b/', $output)){
-                return array("returnCode" => '0', "message" => "Login successful");
+                return array("returnCode" => '0', "message" => "User is Logged in.");
         }
-        return array("returnCode" => 1, "message" => "Invalid credentials");
+        return array("returnCode" => 1, "message" => "User is logged out.");
 }
 
 function makeUserPref($username, $comedy, $drama, $horror, $romance, $sci_fi){
-    // Insert user preferences
     $command = escapeshellcmd("./makeUserPref.php '$username' '$comedy' '$drama' '$horror' '$romance' '$sci_fi'");
     $output = shell_exec($command);
 
@@ -58,11 +54,22 @@ function makeUserPref($username, $comedy, $drama, $horror, $romance, $sci_fi){
 }
 
 function checkUserPref($username){
-    // Check user preferences
     $command = escapeshellcmd("./checkUserPref.php '$username'");
     $output = shell_exec($command);
 
     return array("returnCode" => 0, "message" => "User preferences", "data" => $output);
+}
+
+function checkMovie($movieName){
+    $command = escapeshellcmd("./checkMovie.php '$movieName'");
+    $output = shell_exec($command);
+    
+    if(strpos($output, "Movie not found in database.") !== false) {
+        $command = escapeshellcmd("./getMovieRabbitMQ.php '$movieName'");
+        $output = shell_exec($command);
+    }
+    
+    return array("returnCode" => 0, "message" => "Movie data", "data" => $output);
 }
 
 function requestProcessor($request)
@@ -80,12 +87,14 @@ function requestProcessor($request)
     case "makeUser":
 	    return makeUser($request['username'],$request['email'],$request['password']);
     case "validate_session":
-	    return doValidate($request['sessionId'])
+	    return doValidate($request['sessionId']);
     case "makeUserPref":
 	    return makeUserPref($request['username'], $request['comedy'], $request['drama'], $request['horror'], $request['romance'], $request['sci_fi']);
     case "checkUserPref":
-	    return checkUserPref($request['username']);	    ;
-  }
+	    return checkUserPref($request['username']);
+    case "checkMovie":
+            return checkMovie($request['movieName']);
+  }	
   return array("returnCode" => 1, 'message'=>"Server received request but not found");
 }
 
