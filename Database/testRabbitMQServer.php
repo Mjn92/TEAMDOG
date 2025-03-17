@@ -46,6 +46,25 @@ function doValidate($username){
         return array("returnCode" => 1, "message" => "Invalid credentials");
 }
 
+function makeUserPref($username, $comedy, $drama, $horror, $romance, $sci_fi){
+    // Insert user preferences
+    $command = escapeshellcmd("./makeUserPref.php '$username' '$comedy' '$drama' '$horror' '$romance' '$sci_fi'");
+    $output = shell_exec($command);
+
+    if(preg_match('/\binserted\b/', $output)){
+        return array("returnCode" => 0, "message" => "User preferences saved");
+    }
+    return array("returnCode" => 1, "message" => "Failed to save user preferences");
+}
+
+function checkUserPref($username){
+    // Check user preferences
+    $command = escapeshellcmd("./checkUserPref.php '$username'");
+    $output = shell_exec($command);
+
+    return array("returnCode" => 0, "message" => "User preferences", "data" => $output);
+}
+
 function requestProcessor($request)
 {
   echo "received request".PHP_EOL;
@@ -61,7 +80,11 @@ function requestProcessor($request)
     case "makeUser":
 	    return makeUser($request['username'],$request['email'],$request['password']);
     case "validate_session":
-      return doValidate($request['sessionId']);
+	    return doValidate($request['sessionId'])
+    case "makeUserPref":
+	    return makeUserPref($request['username'], $request['comedy'], $request['drama'], $request['horror'], $request['romance'], $request['sci_fi']);
+    case "checkUserPref":
+	    return checkUserPref($request['username']);	    ;
   }
   return array("returnCode" => 1, 'message'=>"Server received request but not found");
 }
