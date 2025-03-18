@@ -5,15 +5,80 @@
 </head>
 <body>
 
-<h1>Welcome!</h1>
+<!-- Navigation Bar -->
+<div class="navbar">
+    <a href="home.html">Home</a>
+    <a href="browse.html">Browse</a>
+    <a href="friends.html">Friends</a>
 
-<!-- Logout button that calls the logout function -->
-<button onclick="logout()">Logout</button>
+</div>
+
+<h1>Welcome to Movie Recommendations</h1>
+
+<!-- Main Content -->
+<div class="container">
+    <h3>Select Preferences</h3>
+
+    <!-- Movie Recommendation Form -->
+    <div class="form-container">
+        <form onsubmit="event.preventDefault(); getMovieRecommendations();">
+            <label for="genre">Choose a genre:</label>
+            <select id="genre">
+                <option value="action">Select</option>
+                <option value="comedy">Comedy</option>
+                <option value="drama">Drama</option>
+                <option value="horror">Horror</option>
+                <option value="romance">Romance</option>
+                <option value="sci-fi">Sci-Fi</option>
+            </select><br>
+
+            <label for="year">Select a year range:</label>
+            <input type="text" id="year" placeholder="ex 2000-2020" required><br>
+
+            <label for="rating">Minimum rating (1-5):</label>
+            <input type="number" id="rating" min="1" max="5" required><br>
+
+            <button type="submit">Get Recommendations</button>
+        </form>
+    </div>
+
+    <!-- Recommendations will be displayed here -->
+    <div id="recommendations">Recommendations</div>
+</div>
 
 <script>
-function logout() {
-    // Redirect the user to login.html when they log out
-    window.location.href = "index.html";
+// Function to fetch movie recommendations based on user input
+function getMovieRecommendations() {
+    // Get user inputs from the form
+    var genre = document.getElementById("genre").value;
+    var year = document.getElementById("year").value;
+    var rating = document.getElementById("rating").value;
+
+    // Create a request to send the data to the backend
+    var request = new XMLHttpRequest();
+    request.open("POST", "home.php", true); // Request to home.php
+
+    // Send data in the format that the backend will understand
+    var data = "genre=" + encodeURIComponent(genre) + "&year=" + encodeURIComponent(year) + "&rating=" + encodeURIComponent(rating);
+
+    request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    // When the request is complete, process the response
+    request.onreadystatechange = function () {
+        if (this.readyState === 4 && this.status === 200) {
+            var jsonResponse = JSON.parse(this.responseText); // Convert JSON response to JS object
+
+            // If successful, display the recommendations
+            if (jsonResponse.returnCode === 0) {
+                document.getElementById("recommendations").innerHTML = jsonResponse.recommendations.join("<br>");
+            } else {
+                document.getElementById("recommendations").innerHTML = "Sorry, no recommendations found.";
+            }
+        }
+    };
+
+    // Send the request with the data
+    request.send(data);
 }
 </script>
 

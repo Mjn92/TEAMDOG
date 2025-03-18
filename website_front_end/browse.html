@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Browse Movies</title>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+            <a href="home.html">Home</a>
+            <a href="friends.html">Friends</a>
+            <a href="browse.html">Browse</a>
+        </ul>
+    </div>
+
+    <h1>Browse Movies</h1>
+
+    <!-- Search Bar for Searching Movies -->
+    <input type="text" id="searchInput" placeholder="Search for a movie..." onkeyup="searchMovies()">
+
+    <!-- Movies List -->
+    <div id="moviesList"></div>
+
+    <script>
+        // Function to get all movies when the page loads
+        function getMovies() {
+            var request = new XMLHttpRequest();
+            request.open("POST", "browse.php", true);
+            request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            request.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) {
+                    var jsonResponse = JSON.parse(this.responseText);
+                    if (jsonResponse.returnCode === 0) {
+                        // If the request is successful, display the movies list
+                        displayMovies(jsonResponse.movies);
+                    } else {
+                        document.getElementById("moviesList").innerHTML = "No movies found.";
+                    }
+                }
+            };
+
+            request.send("action=get_movies");
+        }
+
+        // Function to display the movies in the list
+        function displayMovies(movies) {
+            var moviesDiv = document.getElementById("moviesList");
+            if (movies.length === 0) {
+                moviesDiv.innerHTML = "No movies available.";
+            } else {
+                var moviesHtml = "<ul>";
+                for (var i = 0; i < movies.length; i++) {
+                    moviesHtml += "<li>" + movies[i].title + " - " + movies[i].genre + "</li>";
+                }
+                moviesHtml += "</ul>";
+                moviesDiv.innerHTML = moviesHtml;
+            }
+        }
+
+        // Function to search movies based on user input
+        function searchMovies() {
+            var query = document.getElementById("searchInput").value;
+
+            var request = new XMLHttpRequest();
+            request.open("POST", "browse.php", true);
+            request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            request.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) {
+                    var jsonResponse = JSON.parse(this.responseText);
+                    if (jsonResponse.returnCode === 0) {
+                        // If search is successful, display the filtered movie list
+                        displayMovies(jsonResponse.movies);
+                    } else {
+                        document.getElementById("moviesList").innerHTML = "No movies found.";
+                    }
+                }
+            };
+
+            request.send("action=search_movies&query=" + encodeURIComponent(query));
+        }
+
+        // Call the function to get all movies when the page loads
+        window.onload = getMovies;
+    </script>
+
+</body>
+</html>
